@@ -31,9 +31,9 @@ function Footer() {
         </div>
         <div className="footer-col">
           <h4>Contact Us</h4>
-          <p>📞 +27 (0) 11 000 0000</p>
-          <p>📧 info@3sixty.co.za</p>
-          <p>📍 Johannesburg, South Africa</p>
+          <p>📞 031 001 6467</p>
+          <p>📧 info@3sixtybranding.co.za</p>
+          <p>📍 127 Victoria Embankment, Durban CBD</p>
         </div>
       </div>
       <div className="footer-bottom">

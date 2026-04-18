@@ -197,17 +197,26 @@
 .cta-content p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 24px; }
 
 @media (max-width: 768px) {
-  .hero-carousel { height: 380px; }
-  .hero-content h1 { font-size: 2rem; }
-  .trust-grid { grid-template-columns: repeat(2, 1fr); }
-  .categories-grid { grid-template-columns: repeat(2, 1fr); }
-  .products-grid { grid-template-columns: repeat(2, 1fr); }
-  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-carousel { height: 300px; }
+  .hero-content h1 { font-size: 1.6rem; }
+  .hero-content p { font-size: 0.95rem; margin-bottom: 16px; }
+  .hero-actions { gap: 10px; }
+  .hero-actions .btn { padding: 10px 20px; font-size: 0.9rem; }
+  .trust-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .services-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .cta-content h2 { font-size: 1.4rem; }
+  .cta-content p { font-size: 0.95rem; }
 }
 @media (max-width: 480px) {
-  .hero-carousel { height: 320px; }
-  .categories-grid { grid-template-columns: 1fr; }
-  .products-grid { grid-template-columns: 1fr; }
+  .hero-carousel { height: 260px; }
+  .hero-content h1 { font-size: 1.3rem; }
+  .hero-content p { display: none; }
+  .categories-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
   .services-grid { grid-template-columns: 1fr; }
-  .trust-grid { grid-template-columns: 1fr; }
+  .trust-grid { grid-template-columns: repeat(2, 1fr); }
+  .trust-item strong { font-size: 0.8rem; }
+  .trust-icon { font-size: 1.5rem; }
 }

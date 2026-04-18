@@ -40,23 +40,20 @@ body {
   border: none;
   transition: all 0.2s;
   text-align: center;
+  font-family: inherit;
 }
 
 .btn-primary {
   background: #C8102E;
   color: #fff;
 }
-
-.btn-primary:hover {
-  background: #A00D24;
-}
+.btn-primary:hover { background: #A00D24; }
 
 .btn-outline {
   background: transparent;
   color: #fff;
   border: 2px solid #fff;
 }
-
 .btn-outline:hover {
   background: #fff;
   color: #1a1a2e;
@@ -68,14 +65,8 @@ body {
 }
 
 /* Utility */
-.section {
-  padding: 64px 0;
-}
-
-.section-grey {
-  background: #f0f2f5;
-}
-
+.section { padding: 64px 0; }
+.section-grey { background: #f0f2f5; }
 .section-title {
   text-align: center;
   font-size: 2rem;
@@ -84,12 +75,22 @@ body {
   margin-bottom: 40px;
 }
 
-/* Scroll to top on route change */
-a {
-  color: inherit;
-}
+a { color: inherit; }
+img { max-width: 100%; height: auto; }
 
-img {
-  max-width: 100%;
-  height: auto;
+/* Add bottom padding on mobile so content clears the bottom nav */
+@media (max-width: 768px) {
+  .App {
+    padding-bottom: 70px;
+  }
+  .container {
+    padding: 0 16px;
+  }
+  .section {
+    padding: 40px 0;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
 }

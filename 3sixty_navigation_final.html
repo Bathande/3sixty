@@ -1,0 +1,516 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:var(--color-background-tertiary)}
+.site{background:var(--color-background-primary);min-height:100vh}
+
+.top-bar{background:#1a2e4a;padding:6px 24px;display:flex;justify-content:flex-end;align-items:center;gap:20px;flex-wrap:wrap}
+.top-bar a{color:#cdd8e8;font-size:12px;text-decoration:none}.top-bar a:hover{color:#fff}
+.top-bar .sep{color:#3a5070;font-size:11px}
+
+.header{background:#fff;border-bottom:1px solid #e5e5e5;padding:14px 24px;display:flex;align-items:center;gap:20px}
+.logo-wrap{display:flex;flex-direction:column;min-width:150px}
+.logo-name{font-size:22px;font-weight:700;color:#1a2e4a;letter-spacing:-0.5px;line-height:1}
+.logo-tag{font-size:10px;color:#2BA8A8;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+
+.search-wrap{flex:1;position:relative;display:flex;align-items:center}
+.search-wrap input{width:100%;height:40px;border:2px solid #e0e0e0;border-right:none;border-radius:6px 0 0 6px;padding:0 16px;font-size:14px;outline:none;color:#333;background:#fafafa;transition:border-color .2s}
+.search-wrap input:focus{border-color:#2BA8A8;background:#fff}
+.cat-select{height:40px;border:2px solid #e0e0e0;border-left:1px solid #e5e5e5;padding:0 10px;font-size:13px;color:#555;background:#f4f4f4;cursor:pointer;outline:none;min-width:130px}
+.search-btn{height:40px;width:46px;background:#2BA8A8;border:none;border-radius:0 6px 6px 0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.search-btn svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round}
+.search-btn:hover{background:#229090}
+
+.header-actions{display:flex;align-items:center;gap:10px;min-width:fit-content}
+.h-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;text-decoration:none;color:#333;padding:4px 8px;border-radius:4px;transition:background .15s}
+.h-btn:hover{background:#f0f0f0}
+.h-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.h-btn span{font-size:10px;color:#666}
+
+.nav{background:#2BA8A8;position:relative;z-index:50}
+.nav ul{display:flex;list-style:none;padding:0 12px;margin:0;flex-wrap:wrap}
+.nav ul li{position:relative}
+.nav ul li > a,.nav ul li > button{display:flex;align-items:center;gap:5px;padding:13px 13px;color:#fff;font-size:13px;font-weight:500;text-decoration:none;background:none;border:none;cursor:pointer;white-space:nowrap;transition:background .15s}
+.nav ul li > a:hover,.nav ul li > button:hover,.nav ul li.open > a,.nav ul li.open > button{background:rgba(0,0,0,0.15)}
+.nav ul li.quote-tab > button{background:rgba(255,140,0,0.85);border-radius:4px;margin:7px 4px;padding:6px 14px}
+.nav ul li.quote-tab > button:hover,.nav ul li.quote-tab.open > button{background:rgba(220,110,0,0.95)}
+.caret{width:10px;height:10px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.nav ul li.open > button .caret{transform:rotate(180deg)}
+
+.dropdown{display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #ddd;border-radius:0 0 6px 6px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:230px;z-index:200;padding:6px 0}
+.nav ul li.open .dropdown{display:block}
+.dropdown a{display:block;padding:9px 18px;font-size:13px;color:#333;text-decoration:none;transition:background .12s}
+.dropdown a:hover{background:#f0fafa;color:#2BA8A8}
+.dropdown .sep-line{height:1px;background:#eee;margin:4px 0}
+.sub-label{padding:8px 18px 4px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#999;font-weight:700}
+
+.mega{min-width:620px;display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #ddd;border-radius:0 0 6px 6px;box-shadow:0 6px 20px rgba(0,0,0,0.12);z-index:200;grid-template-columns:1fr 1fr 1fr}
+.nav ul li.open .mega{display:grid}
+.mega-col{padding:14px 0;border-right:1px solid #eee}
+.mega-col:last-child{border-right:none}
+.col-title{padding:8px 16px 5px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#2BA8A8;font-weight:700}
+.mega-col a{display:block;padding:8px 16px;font-size:13px;color:#333;text-decoration:none;transition:background .12s}
+.mega-col a:hover{background:#f0fafa;color:#2BA8A8}
+.mega-col a.new-badge::after{content:'NEW';background:#e8f7f7;color:#2BA8A8;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:6px;letter-spacing:.5px}
+
+.quote-panel{display:none;position:fixed;inset:0;background:rgba(10,20,40,0.55);z-index:9000;align-items:center;justify-content:center}
+.quote-panel.open{display:flex}
+.qcard{background:#fff;border-radius:10px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
+.qcard-head{background:#1a2e4a;padding:22px 28px;border-radius:10px 10px 0 0;display:flex;justify-content:space-between;align-items:center}
+.qcard-head h2{color:#fff;font-size:18px;font-weight:700;margin:0}
+.qcard-head p{color:#8ea8c0;font-size:12px;margin-top:3px}
+.qclose{background:none;border:none;color:#8ea8c0;font-size:22px;cursor:pointer;line-height:1;padding:0 4px}
+.qclose:hover{color:#fff}
+.qbody{padding:24px 28px}
+.q-section{margin-bottom:20px}
+.q-section label{display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px}
+.q-section input,.q-section select,.q-section textarea{width:100%;padding:10px 14px;border:1.5px solid #ddd;border-radius:6px;font-size:13px;color:#333;outline:none;transition:border-color .2s;font-family:Arial,sans-serif}
+.q-section input:focus,.q-section select:focus,.q-section textarea:focus{border-color:#2BA8A8}
+.q-section textarea{resize:vertical;min-height:80px}
+.q-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.q-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chip{padding:7px 14px;border:1.5px solid #ddd;border-radius:20px;font-size:12px;color:#555;cursor:pointer;transition:all .15s;background:#fff;white-space:nowrap}
+.chip:hover{border-color:#2BA8A8;color:#2BA8A8}
+.chip.active{background:#2BA8A8;border-color:#2BA8A8;color:#fff}
+.q-note{background:#f0fafa;border-left:3px solid #2BA8A8;padding:10px 14px;border-radius:0 6px 6px 0;font-size:12px;color:#555;margin-bottom:20px;line-height:1.6}
+.q-note strong{color:#1a2e4a}
+.qsubmit{width:100%;padding:13px;background:#2BA8A8;color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px}
+.qsubmit:hover{background:#229090}
+.q-success{display:none;text-align:center;padding:40px 28px}
+.q-success .tick{width:60px;height:60px;background:#e8f7f7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px}
+.q-success h3{font-size:18px;color:#1a2e4a;margin-bottom:8px}
+.q-success p{font-size:13px;color:#666;line-height:1.6}
+
+.search-results{display:none;position:absolute;top:calc(100% + 2px);left:0;right:46px;background:#fff;border:1.5px solid #2BA8A8;border-radius:0 0 8px 8px;z-index:300;max-height:300px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+.sr-item{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;border-bottom:1px solid #f5f5f5;transition:background .12s}
+.sr-item:hover{background:#f0fafa}
+.sr-icon{width:32px;height:32px;border-radius:6px;background:#e8f7f7;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sr-icon svg{width:16px;height:16px;fill:none;stroke:#2BA8A8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sr-text{font-size:13px;color:#333;font-weight:500}
+.sr-cat{font-size:11px;color:#999;margin-top:1px}
+.sr-quote-tag{font-size:10px;background:#fff3e0;color:#e65100;padding:2px 6px;border-radius:3px;margin-left:6px;font-weight:600}
+
+.banner{background:#1a2e4a;padding:26px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.banner-left h2{color:#fff;font-size:18px;margin-bottom:4px}
+.banner-left p{color:#8ea8c0;font-size:13px}
+.banner-cta{background:#2BA8A8;color:#fff;padding:10px 22px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;border:none;white-space:nowrap}
+.banner-cta:hover{background:#229090}
+</style>
+
+<div class="site">
+  <div class="top-bar">
+    <a href="#">031 001 6467</a><span class="sep">|</span>
+    <a href="#">info@3sixtybranding.co.za</a><span class="sep">|</span>
+    <a href="#">127 Victoria Embankment, Durban</a><span class="sep">|</span>
+    <a href="#">Track My Order</a>
+  </div>
+
+  <div class="header">
+    <div class="logo-wrap">
+      <span class="logo-name">3SIXTY</span>
+      <span class="logo-name" style="color:#2BA8A8">BRANDING</span>
+      <span class="logo-tag">Print • Brand • Create</span>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search by product name, category or keyword (min. 3 characters)" autocomplete="off"/>
+      <select class="cat-select" id="catFilter">
+        <option>All Categories</option>
+        <option>Paper Printing</option>
+        <option>Indoor Branding</option>
+        <option>Outdoor Branding</option>
+        <option>T-Shirt Printing</option>
+        <option>Graphic Design</option>
+        <option>Request a Quote</option>
+      </select>
+      <button class="search-btn" onclick="doSearch()">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+      </button>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <div class="header-actions">
+      <a class="h-btn" href="#">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Login</span>
+      </a>
+      <a class="h-btn" href="#">
+        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Orders</span>
+      </a>
+      <a class="h-btn" href="#">
+        <svg viewBox="0 0 24 24"><path d="M9 20a1 1 0 1 0 2 0 1 1 0 0 0-2 0M20 20a1 1 0 1 0 2 0 1 1 0 0 0-2 0M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span>Cart (0)</span>
+      </a>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <ul>
+      <li id="nav-paper">
+        <button onclick="toggleNav('nav-paper')">Paper Printing <svg class="caret" viewBox="0 0 12 8"><polyline points="1,1 6,7 11,1"/></svg></button>
+        <div class="dropdown">
+          <div class="sub-label">Flat Print</div>
+          <a href="#">Flyers (A6 / A5 / A4)</a>
+          <a href="#">Business Cards</a>
+          <a href="#">Posters (A0 – A3)</a>
+          <a href="#">Letterheads</a>
+          <a href="#">Certificates</a>
+          <a href="#">Presentation Folders</a>
+        </div>
+      </li>
+      <li id="nav-indoor">
+        <button onclick="toggleNav('nav-indoor')">Indoor Branding <svg class="caret" viewBox="0 0 12 8"><polyline points="1,1 6,7 11,1"/></svg></button>
+        <div class="mega">
+          <div class="mega-col">
+            <div class="col-title">Pull-Up Banners</div>
+            <a href="#">Economy PVC Pull-Up</a>
+            <a href="#">Executive PVC Pull-Up</a>
+            <a href="#">Executive Textile Pull-Up</a>
+            <a href="#">Spider / X Banner</a>
+          </div>
+          <div class="mega-col">
+            <div class="col-title">Wall Banners</div>
+            <a href="#">Wall Banner 2.25m × 2.25m</a>
+            <a href="#">Wall Banner 3m × 2.25m</a>
+            <a href="#">Wall Banner 4.5m × 2.25m</a>
+            <a href="#">Curved Banner Wall</a>
+            <a href="#" class="new-badge">Straight Bannerwall (Webprinter)</a>
+          </div>
+          <div class="mega-col">
+            <div class="col-title">Pop-Up & Tables</div>
+            <a href="#">2-Sided Pop-Up Banner</a>
+            <a href="#">3-Sided Pop-Up Banner</a>
+            <a href="#">Branded Tablecloth</a>
+            <a href="#">Branded Promo Table</a>
+            <a href="#">Wall Fabric Stock Banner</a>
+          </div>
+        </div>
+      </li>
+      <li id="nav-outdoor">
+        <button onclick="toggleNav('nav-outdoor')">Outdoor Branding <svg class="caret" viewBox="0 0 12 8"><polyline points="1,1 6,7 11,1"/></svg></button>
+        <div class="mega">
+          <div class="mega-col">
+            <div class="col-title">Flag Banners</div>
+            <a href="#">Telescopic Banner</a>
+            <a href="#">Teardrop Banner</a>
+            <a href="#">Feather / Sharkfin Banner</a>
+            <a href="#">3-Sided Lantern Banner</a>
+            <a href="#">Street Pole Banner</a>
+            <a href="#">Sandwich Board (A1)</a>
+            <a href="#">Car Magnetic Decals</a>
+            <a href="#">A-Frame (Textile / PVC)</a>
+            <a href="#">Parasol (2m – 3m)</a>
+          </div>
+          <div class="mega-col">
+            <div class="col-title">Gazebos</div>
+            <a href="#">Gazebo 1m × 1m Kiosk</a>
+            <a href="#">Gazebo 1.5m × 1.5m</a>
+            <a href="#">Gazebo 2m × 2m</a>
+            <a href="#">Gazebo 2m × 2m Petite Frame</a>
+            <a href="#">Gazebo 3m × 3m</a>
+            <a href="#">Gazebo 4.5m × 3m</a>
+            <div class="col-title" style="margin-top:8px">Wall Skins</div>
+            <a href="#">Canopy Only (no walls)</a>
+            <a href="#">Half-Wall Skins</a>
+            <a href="#">Full-Wall Skins</a>
+            <a href="#">Gazebo Walls (fabric only)</a>
+          </div>
+          <div class="mega-col">
+            <div class="col-title">Combo Packages</div>
+            <a href="#">Combo Special 1 — R15,550</a>
+            <a href="#">Combo Special 2 — R12,000</a>
+            <a href="#">Combo Special 3 — R16,950</a>
+            <a href="#">Build Your Own Combo</a>
+          </div>
+        </div>
+      </li>
+      <li id="nav-tshirt">
+        <button onclick="toggleNav('nav-tshirt')">T-Shirt Printing <svg class="caret" viewBox="0 0 12 8"><polyline points="1,1 6,7 11,1"/></svg></button>
+        <div class="dropdown">
+          <div class="sub-label">Print Methods</div>
+          <a href="#">Flex / Flock / Metallic</a>
+          <a href="#">DTF (Direct to Film)</a>
+          <a href="#">Screen Print (min. 12)</a>
+          <a href="#">Embroidery (min. 6)</a>
+          <div class="sep-line"></div>
+          <div class="sub-label">Print Areas</div>
+          <a href="#">Pocket Print</a>
+          <a href="#">A5 / A4 / A3</a>
+        </div>
+      </li>
+      <li id="nav-design">
+        <button onclick="toggleNav('nav-design')">Graphic Design <svg class="caret" viewBox="0 0 12 8"><polyline points="1,1 6,7 11,1"/></svg></button>
+        <div class="dropdown">
+          <div class="sub-label">Packages</div>
+          <a href="#">Bronze — R1,250</a>
+          <a href="#">Silver — R2,000</a>
+          <a href="#">Gold — R3,000</a>
+          <div class="sep-line"></div>
+          <div class="sub-label">Individual Services</div>
+          <a href="#">Logo Design</a>
+          <a href="#">Business Card Layout</a>
+          <a href="#">Letterhead Design</a>
+          <a href="#">Flyer / Banner Design</a>
+          <a href="#">Company Profile</a>
+          <a href="#">Logo Redraw (Vectorise)</a>
+          <a href="#">Email Signature</a>
+          <a href="#">Welcome Board (A1)</a>
+        </div>
+      </li>
+      <li class="quote-tab" id="nav-quote">
+        <button onclick="openQuote()">
+          <svg style="width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+          Request a Quote
+        </button>
+      </li>
+      <li><a href="#">Contact Us</a></li>
+    </ul>
+  </nav>
+
+  <div class="banner">
+    <div class="banner-left">
+      <h2>Welcome to 3Sixty Branding</h2>
+      <p>127 Victoria Embankment, Durban CBD &nbsp;|&nbsp; 031 001 6467 &nbsp;|&nbsp; Same-day production available before 11:00</p>
+    </div>
+    <button class="banner-cta" onclick="openQuote()">Get a Custom Quote</button>
+  </div>
+</div>
+
+<!-- QUOTE PANEL -->
+<div class="quote-panel" id="quotePanel">
+  <div class="qcard">
+    <div class="qcard-head">
+      <div>
+        <h2>Request a Quote</h2>
+        <p>Complex jobs, signage, car branding & custom work — we'll get back to you within 24 hours</p>
+      </div>
+      <button class="qclose" onclick="closeQuote()">✕</button>
+    </div>
+
+    <div class="qbody" id="qbody">
+      <div class="q-note">
+        <strong>Why a quote?</strong> Some jobs depend on material type, surface size, substrate, quantity, and finishing. Prices for signage, car branding, and custom work are calculated per job — this form lets us give you an accurate number.
+      </div>
+
+      <div class="q-section">
+        <label>What type of job is this? <span style="color:#e65100">*</span></label>
+        <div class="q-chips" id="jobTypeChips">
+          <div class="chip" onclick="toggleChip(this)">Vehicle Branding</div>
+          <div class="chip" onclick="toggleChip(this)">Car Wrap (full / partial)</div>
+          <div class="chip" onclick="toggleChip(this)">Signage (shop front)</div>
+          <div class="chip" onclick="toggleChip(this)">Illuminated Signage</div>
+          <div class="chip" onclick="toggleChip(this)">3D Lettering</div>
+          <div class="chip" onclick="toggleChip(this)">Window Graphics</div>
+          <div class="chip" onclick="toggleChip(this)">Billboard / Hoarding</div>
+          <div class="chip" onclick="toggleChip(this)">Pylon / Tower Sign</div>
+          <div class="chip" onclick="toggleChip(this)">Floor Graphics</div>
+          <div class="chip" onclick="toggleChip(this)">Wallpaper / Wall Mural</div>
+          <div class="chip" onclick="toggleChip(this)">Trailer / Truck Branding</div>
+          <div class="chip" onclick="toggleChip(this)">Event / Exhibition Build</div>
+          <div class="chip" onclick="toggleChip(this)">Bulk Garment Order (50+)</div>
+          <div class="chip" onclick="toggleChip(this)">Other / Custom</div>
+        </div>
+      </div>
+
+      <div class="q-section">
+        <label>Describe your project <span style="color:#e65100">*</span></label>
+        <textarea id="qDesc" placeholder="E.g. Full vehicle wrap on a Toyota Hilux, white base, branded with company logo and contact details on both sides and tailgate. Need 3 vehicles done."></textarea>
+      </div>
+
+      <div class="q-row">
+        <div class="q-section">
+          <label>Quantity / Number of units</label>
+          <input type="text" id="qQty" placeholder="E.g. 3 vehicles, 2 signs"/>
+        </div>
+        <div class="q-section">
+          <label>Preferred turnaround</label>
+          <select id="qTurnaround">
+            <option value="">Select timeframe</option>
+            <option>ASAP / Rush</option>
+            <option>Within 1 week</option>
+            <option>Within 2 weeks</option>
+            <option>Within 1 month</option>
+            <option>Flexible / No rush</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="q-section">
+        <label>Do you have artwork / design ready?</label>
+        <div class="q-chips" id="artworkChips">
+          <div class="chip" onclick="selectChip('artworkChips',this)">Yes — print-ready file</div>
+          <div class="chip" onclick="selectChip('artworkChips',this)">Yes — but needs some work</div>
+          <div class="chip" onclick="selectChip('artworkChips',this)">No — need full design</div>
+          <div class="chip" onclick="selectChip('artworkChips',this)">No — just a brief / idea</div>
+        </div>
+      </div>
+
+      <div class="q-section">
+        <label>Material / substrate preference <span style="color:#999;font-weight:400">(if known)</span></label>
+        <div class="q-chips" id="matChips">
+          <div class="chip" onclick="toggleChip(this)">Cast Vinyl</div>
+          <div class="chip" onclick="toggleChip(this)">Calendered Vinyl</div>
+          <div class="chip" onclick="toggleChip(this)">Aluminium Composite (ACM)</div>
+          <div class="chip" onclick="toggleChip(this)">Acrylic</div>
+          <div class="chip" onclick="toggleChip(this)">Dibond</div>
+          <div class="chip" onclick="toggleChip(this)">Corrugated Plastic (Corflute)</div>
+          <div class="chip" onclick="toggleChip(this)">PVC Board</div>
+          <div class="chip" onclick="toggleChip(this)">Fabric</div>
+          <div class="chip" onclick="toggleChip(this)">Not sure — advise me</div>
+        </div>
+      </div>
+
+      <div class="q-row">
+        <div class="q-section">
+          <label>Your name <span style="color:#e65100">*</span></label>
+          <input type="text" id="qName" placeholder="Full name"/>
+        </div>
+        <div class="q-section">
+          <label>Company name <span style="color:#999;font-weight:400">(optional)</span></label>
+          <input type="text" id="qCompany" placeholder="Company / organisation"/>
+        </div>
+      </div>
+
+      <div class="q-row">
+        <div class="q-section">
+          <label>Email address <span style="color:#e65100">*</span></label>
+          <input type="email" id="qEmail" placeholder="you@example.com"/>
+        </div>
+        <div class="q-section">
+          <label>WhatsApp / Phone <span style="color:#e65100">*</span></label>
+          <input type="tel" id="qPhone" placeholder="e.g. 082 555 0000"/>
+        </div>
+      </div>
+
+      <div class="q-section">
+        <label>Delivery / installation location</label>
+        <input type="text" id="qLocation" placeholder="City, province or full address"/>
+      </div>
+
+      <button class="qsubmit" onclick="submitQuote()">Submit Quote Request</button>
+      <p style="font-size:11px;color:#aaa;text-align:center;margin-top:10px">We respond within 24 hours on business days. No spam — your info is only used to prepare your quote.</p>
+    </div>
+
+    <div class="q-success" id="qSuccess">
+      <div class="tick">✓</div>
+      <h3>Quote request received!</h3>
+      <p>Thanks — we'll review your job details and get back to you<br>within <strong>24 hours</strong> on business days.<br><br>
+      <strong>031 001 6467</strong> &nbsp;|&nbsp; <strong>info@3sixtybranding.co.za</strong><br><br>
+      You can also WhatsApp us directly for urgent jobs.</p>
+      <button onclick="closeQuote()" style="margin-top:20px;padding:10px 28px;background:#2BA8A8;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const products = [
+  {n:'Flyers A5 / A6 / A4',c:'Paper Printing'},{n:'Business Cards',c:'Paper Printing'},
+  {n:'Posters A0 – A3',c:'Paper Printing'},{n:'Letterheads',c:'Paper Printing'},
+  {n:'Certificates',c:'Paper Printing'},{n:'Presentation Folders',c:'Paper Printing'},
+  {n:'Economy PVC Pull-Up Banner',c:'Indoor Branding'},{n:'Executive PVC Pull-Up',c:'Indoor Branding'},
+  {n:'Executive Textile Pull-Up',c:'Indoor Branding'},{n:'Spider / X Banner',c:'Indoor Branding'},
+  {n:'Wall Banner 2.25m × 2.25m',c:'Indoor Branding'},{n:'Wall Banner 3m × 2.25m',c:'Indoor Branding'},
+  {n:'Curved Banner Wall',c:'Indoor Branding'},{n:'Branded Tablecloth',c:'Indoor Branding'},
+  {n:'2-Sided Pop-Up Banner',c:'Indoor Branding'},{n:'3-Sided Pop-Up Banner',c:'Indoor Branding'},
+  {n:'Straight Bannerwall (Webprinter)',c:'Indoor Branding'},
+  {n:'Telescopic Banner',c:'Outdoor Branding'},{n:'Teardrop Banner',c:'Outdoor Branding'},
+  {n:'Sharkfin / Feather Banner',c:'Outdoor Branding'},{n:'Street Pole Banner',c:'Outdoor Branding'},
+  {n:'A-Frame Banner',c:'Outdoor Branding'},{n:'Car Magnetic Decals',c:'Outdoor Branding'},
+  {n:'Parasol 2m / 3m',c:'Outdoor Branding'},{n:'Sandwich Board A1',c:'Outdoor Branding'},
+  {n:'Gazebo 1m × 1m Kiosk',c:'Outdoor Branding'},{n:'Gazebo 1.5m × 1.5m',c:'Outdoor Branding'},
+  {n:'Gazebo 2m × 2m',c:'Outdoor Branding'},{n:'Gazebo 3m × 3m',c:'Outdoor Branding'},
+  {n:'Gazebo 4.5m × 3m',c:'Outdoor Branding'},{n:'Gazebo Walls (fabric)',c:'Outdoor Branding'},
+  {n:'Combo Special 1',c:'Outdoor Branding'},{n:'Combo Special 2',c:'Outdoor Branding'},
+  {n:'Combo Special 3',c:'Outdoor Branding'},
+  {n:'Flex / Flock T-Shirt Print',c:'T-Shirt Printing'},{n:'DTF T-Shirt Print',c:'T-Shirt Printing'},
+  {n:'Screen Print (min. 12)',c:'T-Shirt Printing'},{n:'Embroidery (min. 6)',c:'T-Shirt Printing'},
+  {n:'Logo Design',c:'Graphic Design'},{n:'Business Card Layout',c:'Graphic Design'},
+  {n:'Flyer / Banner Design',c:'Graphic Design'},{n:'Company Profile Design',c:'Graphic Design'},
+  {n:'Logo Redraw / Vectorise',c:'Graphic Design'},{n:'Bronze Design Package',c:'Graphic Design'},
+  {n:'Silver Design Package',c:'Graphic Design'},{n:'Gold Design Package',c:'Graphic Design'},
+  {n:'Vehicle Branding / Car Wrap',c:'Request a Quote',q:true},{n:'Shop Front Signage',c:'Request a Quote',q:true},
+  {n:'Illuminated Signage',c:'Request a Quote',q:true},{n:'3D Lettering',c:'Request a Quote',q:true},
+  {n:'Window Graphics',c:'Request a Quote',q:true},{n:'Billboard / Hoarding',c:'Request a Quote',q:true},
+  {n:'Wall Mural / Wallpaper',c:'Request a Quote',q:true},{n:'Floor Graphics',c:'Request a Quote',q:true},
+  {n:'Truck / Trailer Branding',c:'Request a Quote',q:true},{n:'Bulk Garment Order (50+)',c:'Request a Quote',q:true},
+  {n:'Pylon / Tower Sign',c:'Request a Quote',q:true},{n:'Event / Exhibition Build',c:'Request a Quote',q:true},
+];
+
+const icons = {
+  'Paper Printing':'<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>',
+  'Indoor Branding':'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>',
+  'Outdoor Branding':'<svg viewBox="0 0 24 24"><polygon points="3,17 12,3 21,17"/><line x1="12" y1="3" x2="12" y2="22"/></svg>',
+  'T-Shirt Printing':'<svg viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>',
+  'Graphic Design':'<svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.47-1.125-.29-.289-.472-.684-.472-1.125A1.64 1.64 0 0 1 14.817 17h1.96C20.343 17 23 14.134 23 10.365 21.965 6.011 17.518 2 12 2z"/></svg>',
+  'Request a Quote':'<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+};
+
+function toggleNav(id) {
+  document.querySelectorAll('.nav ul li').forEach(li => { if(li.id!==id) li.classList.remove('open'); });
+  document.getElementById(id).classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if(!e.target.closest('.nav')) document.querySelectorAll('.nav ul li').forEach(li=>li.classList.remove('open'));
+  if(!e.target.closest('.search-wrap')) document.getElementById('searchResults').style.display='none';
+});
+
+function openQuote() { document.getElementById('quotePanel').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeQuote() {
+  document.getElementById('quotePanel').classList.remove('open');
+  document.body.style.overflow='';
+  document.getElementById('qbody').style.display='block';
+  document.getElementById('qSuccess').style.display='none';
+  document.querySelectorAll('.chip.active').forEach(c=>c.classList.remove('active'));
+  ['qName','qEmail','qPhone','qDesc','qQty','qLocation','qCompany'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('qTurnaround').selectedIndex=0;
+}
+document.getElementById('quotePanel').addEventListener('click', e => { if(e.target===e.currentTarget) closeQuote(); });
+
+function toggleChip(el) { el.classList.toggle('active'); }
+function selectChip(groupId, el) {
+  document.querySelectorAll('#'+groupId+' .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function submitQuote() {
+  const name=document.getElementById('qName').value.trim();
+  const email=document.getElementById('qEmail').value.trim();
+  const phone=document.getElementById('qPhone').value.trim();
+  const desc=document.getElementById('qDesc').value.trim();
+  if(!name||!email||!phone||!desc) { alert('Please fill in your name, email, phone, and project description.'); return; }
+  document.getElementById('qbody').style.display='none';
+  document.getElementById('qSuccess').style.display='block';
+}
+
+function doSearch() {
+  const q=document.getElementById('searchInput').value.trim();
+  const cat=document.getElementById('catFilter').value;
+  if(q.length<3) return;
+  showResults(q,cat);
+}
+document.getElementById('searchInput').addEventListener('input',function(){
+  const q=this.value.trim(), cat=document.getElementById('catFilter').value;
+  if(q.length>=3) showResults(q,cat); else document.getElementById('searchResults').style.display='none';
+});
+document.getElementById('searchInput').addEventListener('keydown',e=>{ if(e.key==='Enter') doSearch(); });
+
+function showResults(q,cat) {
+  const ql=q.toLowerCase();
+  let filtered=products.filter(p=>p.n.toLowerCase().includes(ql)||p.c.toLowerCase().includes(ql));
+  if(cat!=='All Categories') filtered=filtered.filter(p=>p.c===cat);
+  const box=document.getElementById('searchResults');
+  if(!filtered.length) {
+    box.innerHTML='<div style="padding:14px 16px;font-size:13px;color:#888">No results for "'+q+'" — <span style="color:#2BA8A8;cursor:pointer;font-weight:600" onclick="openQuote()">request a custom quote</span></div>';
+  } else {
+    box.innerHTML=filtered.slice(0,8).map(p=>{
+      const qtag=p.q?'<span class="sr-quote-tag">QUOTE</span>':'';
+      const clickAttr=p.q?'onclick="closeResultsAndQuote()"':'';
+      return '<div class="sr-item" '+clickAttr+'><div class="sr-icon">'+(icons[p.c]||icons['Paper Printing'])+'</div><div><div class="sr-text">'+p.n+qtag+'</div><div class="sr-cat">'+p.c+'</div></div></div>';
+    }).join('')+(filtered.length>8?'<div style="padding:8px 16px;font-size:12px;color:#2BA8A8;border-top:1px solid #f0f0f0">+' +(filtered.length-8)+' more — press Enter to see all</div>':'');
+  }
+  box.style.display='block';
+}
+function closeResultsAndQuote() {
+  document.getElementById('searchResults').style.display='none';
+  openQuote();
+}
+</script>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { categories, products, services } from '../data/products';
+import { categories, services } from '../data/products'; // static lists
+import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/ProductCard';
 import './Home.css';
 
@@ -19,7 +20,10 @@ function Home() {
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  const featuredProducts = products.filter(p => [1, 4, 8, 9, 11, 13].includes(p.id));
+  const { products } = useProducts();
+
+  // Show first 6 products as featured (or filter by localId if you prefer specific ones)
+  const featuredProducts = products.slice(0, 6);
 
   return (
     <main>

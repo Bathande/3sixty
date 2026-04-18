@@ -5,9 +5,15 @@ const CartContext = createContext();
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
 
+  /**
+   * addItem(product, qty, options)
+   * options: { variant, artworkOption, artworkNote }
+   * variant: the selected variant object from product.variants
+   */
   const addItem = useCallback((product, qty = 1, options = {}) => {
     setItems(prev => {
-      const key = `${product.id}-${options.color || ''}-${options.size || ''}`;
+      const variantLabel = options.variant?.label || '';
+      const key = `${product.id}__${variantLabel}`;
       const existing = prev.find(i => i.key === key);
       if (existing) {
         return prev.map(i => i.key === key ? { ...i, qty: i.qty + qty } : i);

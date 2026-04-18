@@ -1,0 +1,92 @@
+/* Only visible on mobile */
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #fff;
+    border-top: 1px solid #e5e5e5;
+    padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+
+  .mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 0;
+    text-decoration: none;
+    color: #888;
+    font-size: 10px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.15s;
+  }
+  .mobile-nav-item svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .mobile-nav-item.active { color: #C8102E; }
+  .mobile-nav-item:hover { color: #C8102E; }
+
+  /* Quote FAB button */
+  .mobile-nav-quote { color: #888; }
+  .quote-fab {
+    width: 48px;
+    height: 48px;
+    background: #C8102E;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -20px;
+    box-shadow: 0 4px 16px rgba(200,16,46,0.4);
+  }
+  .quote-fab svg {
+    width: 22px;
+    height: 22px;
+    stroke: #fff;
+  }
+  .mobile-nav-quote span { color: #888; }
+
+  /* Cart badge */
+  .mobile-nav-cart-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mobile-cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background: #C8102E;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+}

@@ -6,7 +6,10 @@ import './Cart.css';
 function Cart() {
   const { items, updateQty, removeItem } = useCart();
 
-  const subtotal = items.reduce((sum, i) => sum + (i.product.price * i.qty), 0);
+  const subtotal = items.reduce((sum, i) => {
+    const price = i.options?.variant?.price || i.product.price || 0;
+    return sum + (price * i.qty);
+  }, 0);
   const vat = subtotal * 0.15;
   const total = subtotal;
 
@@ -51,10 +54,20 @@ function Cart() {
                   </Link>
                   <div>
                     <Link to={`/product/${item.product.id}`} className="cart-item-name">{item.product.name}</Link>
+                    {item.options?.variant && (
+                      <span className="cart-item-variant">📐 {item.options.variant.label}</span>
+                    )}
+                    {item.options?.artworkOption && (
+                      <span className="cart-item-artwork">
+                        {item.options.artworkOption === 'upload' && '📤 Upload design'}
+                        {item.options.artworkOption === 'design' && '🖥 Design online'}
+                        {item.options.artworkOption === 'later' && '🎨 Upload artwork later'}
+                      </span>
+                    )}
                     <span className="cart-item-sku">{item.product.sku}</span>
                   </div>
                 </div>
-                <div className="cart-item-price">R {item.product.price.toLocaleString('en-ZA')}</div>
+                <div className="cart-item-price">R {(item.options?.variant?.price || item.product.price || 0).toLocaleString('en-ZA')}</div>
                 <div className="cart-item-qty">
                   <div className="qty-sm">
                     <button onClick={() => updateQty(item.key, item.qty - 1)}>−</button>
@@ -62,7 +75,7 @@ function Cart() {
                     <button onClick={() => updateQty(item.key, item.qty + 1)}>+</button>
                   </div>
                 </div>
-                <div className="cart-item-total">R {(item.product.price * item.qty).toLocaleString('en-ZA')}</div>
+                <div className="cart-item-total">R {((item.options?.variant?.price || item.product.price || 0) * item.qty).toLocaleString('en-ZA')}</div>
                 <button className="cart-item-remove" onClick={() => removeItem(item.key)} aria-label={`Remove ${item.product.name}`}>✕</button>
               </div>
             ))}

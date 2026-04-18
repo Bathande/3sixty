@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "3Sixty",
+  "name": "3Sixty Branding",
+  "description": "Pull-up banners, gazebos, vehicle branding, DTF printing & graphic design. Durban, South Africa.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +11,33 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait-primary",
+  "theme_color": "#C8102E",
+  "background_color": "#ffffff",
+  "categories": ["shopping", "business"],
+  "shortcuts": [
+    {
+      "name": "Products",
+      "url": "/products",
+      "description": "Browse all products"
+    },
+    {
+      "name": "Get a Quote",
+      "url": "/quote",
+      "description": "Request a custom quote"
+    }
+  ]
 }
