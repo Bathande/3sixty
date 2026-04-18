@@ -1,0 +1,213 @@
+/* Hero Carousel */
+.hero-carousel {
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+  background: #1a1a2e;
+}
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-slide.active {
+  opacity: 1;
+}
+.hero-slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 46, 0.65);
+  display: flex;
+  align-items: center;
+}
+.hero-content {
+  color: #fff;
+}
+.hero-content h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  line-height: 1.1;
+}
+.hero-content p {
+  font-size: 1.2rem;
+  color: #ddd;
+  margin-bottom: 28px;
+}
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.hero-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.dot.active {
+  background: #C8102E;
+  border-color: #C8102E;
+}
+
+/* Trust Bar */
+.trust-bar {
+  background: #fff;
+  padding: 24px 0;
+  border-bottom: 1px solid #eee;
+}
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.trust-icon { font-size: 2rem; }
+.trust-item strong { font-size: 0.9rem; color: #1a1a2e; }
+.trust-item small { color: #888; font-size: 0.8rem; }
+
+/* Sections */
+.section { padding: 64px 0; }
+.section-grey { background: #f8f9fa; }
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin-bottom: 40px;
+}
+
+/* Categories */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+.category-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.category-img-wrap {
+  height: 160px;
+  overflow: hidden;
+  background: #eee;
+}
+.category-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.category-card h3 {
+  font-size: 0.95rem;
+  color: #1a1a2e;
+  margin: 12px 16px 4px;
+}
+.category-card p {
+  font-size: 0.78rem;
+  color: #888;
+  margin: 0 16px 16px;
+  line-height: 1.4;
+}
+
+/* Products Grid */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Services */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.service-card {
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.service-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+.service-info {
+  padding: 16px;
+}
+.service-info h3 {
+  font-size: 1rem;
+  color: #1a1a2e;
+  margin: 0 0 6px;
+}
+.service-info p {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* CTA */
+.cta-section {
+  background: linear-gradient(135deg, #C8102E, #A00D24);
+  color: #fff;
+  padding: 64px 0;
+  text-align: center;
+}
+.cta-content h2 { font-size: 2rem; margin-bottom: 12px; }
+.cta-content p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 24px; }
+
+@media (max-width: 768px) {
+  .hero-carousel { height: 380px; }
+  .hero-content h1 { font-size: 2rem; }
+  .trust-grid { grid-template-columns: repeat(2, 1fr); }
+  .categories-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .hero-carousel { height: 320px; }
+  .categories-grid { grid-template-columns: 1fr; }
+  .products-grid { grid-template-columns: 1fr; }
+  .services-grid { grid-template-columns: 1fr; }
+  .trust-grid { grid-template-columns: 1fr; }
+}

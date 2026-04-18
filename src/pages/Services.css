@@ -1,0 +1,41 @@
+.services-page .about-hero {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff;
+  padding: 64px 0;
+  text-align: center;
+}
+.services-page .about-hero h1 { font-size: 2.5rem; margin: 0 0 8px; }
+.services-page .about-hero p { color: #ccc; font-size: 1.1rem; }
+.services-full-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+.service-full-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.service-full-img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+.service-full-info {
+  padding: 24px;
+}
+.service-full-info h2 {
+  font-size: 1.2rem;
+  color: #1a1a2e;
+  margin: 0 0 8px;
+}
+.service-full-info p {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+@media (max-width: 768px) {
+  .services-full-grid { grid-template-columns: 1fr; }
+}

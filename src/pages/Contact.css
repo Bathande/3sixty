@@ -1,0 +1,76 @@
+.contact-page .about-hero {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff;
+  padding: 64px 0;
+  text-align: center;
+}
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 48px;
+}
+.contact-info h2 {
+  font-size: 1.5rem;
+  color: #1a1a2e;
+  margin: 0 0 24px;
+}
+.contact-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.contact-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+.contact-item strong {
+  display: block;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+.contact-item p {
+  color: #666;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.contact-form-wrap {
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+.contact-form h2 {
+  font-size: 1.5rem;
+  color: #1a1a2e;
+  margin: 0 0 24px;
+}
+.contact-form .form-group {
+  margin-bottom: 16px;
+}
+.contact-form label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: #C8102E;
+  outline: none;
+}
+@media (max-width: 768px) {
+  .contact-layout { grid-template-columns: 1fr; }
+  .contact-form-wrap { padding: 24px; }
+}
