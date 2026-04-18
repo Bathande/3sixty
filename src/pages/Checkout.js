@@ -27,6 +27,7 @@ function Checkout() {
   const [shipping, setShipping] = useState('eco');
   const [payment, setPayment] = useState('payfast');
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', phone: '', company: '',
     address: '', address2: '', city: '', province: '', postalCode: '', notes: '',
@@ -68,58 +69,76 @@ function Checkout() {
     );
   }
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const value = e.target.value.replace(/<[^>]*>/g, '');
+    setForm({ ...form, [e.target.name]: value });
+    // Clear error on change
+    if (errors[e.target.name]) {
+      setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
+    }
+  };
 
-  const handleSubmit = async (e) => {
+  const validateStep1 = () => {
+    const e = {};
+    if (!form.firstName.trim()) e.firstName = 'First name is required';
+    if (!form.lastName.trim())  e.lastName  = 'Last name is required';
+    if (!form.email.trim())     e.email     = 'Email address is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email address';
+    if (!form.phone.trim())     e.phone     = 'Phone number is required';
+    else if (form.phone.replace(/\D/g, '').length < 9) e.phone = 'Enter a valid phone number';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const validateStep2 = () => {
+    if (shipping === 'collect') return true;
+    const e = {};
+    if (!form.address.trim())    e.address    = 'Street address is required';
+    if (!form.city.trim())       e.city       = 'City is required';
+    if (!form.province)          e.province   = 'Please select a province';
+    if (!form.postalCode.trim()) e.postalCode = 'Postal code is required';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
+    if (submitting) return;
     setSubmitting(true);
-    try {
-      const order = {
-        orderId: 'ORD-' + Date.now().toString(36).toUpperCase(),
-        date: new Date().toISOString(),
-        userId: user?.uid || null,
-        isGuest: !user,
-        items: items.map((i) => ({
-          name: i.product.name,
-          sku: i.product.sku,
-          qty: i.qty,
-          price: itemPrice(i),
-          variant: i.options?.variant?.label || null,
-          artworkOption: i.options?.artworkOption || null,
-        })),
-        customer: form,
-        shipping: SHIPPING_OPTIONS.find((s) => s.id === shipping),
-        payment: PAYMENT_METHODS.find((p) => p.id === payment),
-        subtotal,
-        shippingCost,
-        total,
-        paymentStatus: payment === 'payfast' ? 'pending_payfast' : 'pending_eft',
-      };
 
-      // Save to Firestore first
-      await addOrder(order);
+    const order = {
+      orderId: 'ORD-' + Date.now().toString(36).toUpperCase(),
+      date: new Date().toISOString(),
+      userId: user?.uid || null,
+      isGuest: !user,
+      items: items.map((i) => ({
+        name: i.product.name,
+        sku: i.product.sku,
+        qty: i.qty,
+        price: itemPrice(i),
+        variant: i.options?.variant?.label || null,
+        artworkOption: i.options?.artworkOption || null,
+      })),
+      customer: form,
+      shipping: SHIPPING_OPTIONS.find((s) => s.id === shipping),
+      payment: PAYMENT_METHODS.find((p) => p.id === payment),
+      subtotal,
+      shippingCost,
+      total,
+      paymentStatus: payment === 'payfast' ? 'pending_payfast' : 'pending_eft',
+    };
 
-      // Send email notification to admin
-      try {
-        await sendOrderEmail(order);
-      } catch (emailErr) {
-        console.error('Order email failed:', emailErr);
-      }
+    // Fire-and-forget background tasks — never block payment
+    addOrder(order).catch((err) => console.error('[Order] Firestore save failed:', err));
+    sendOrderEmail(order).catch((err) => console.error('[Order] Email failed:', err));
 
-      if (payment === 'payfast') {
-        // Redirect to PayFast — user comes back to /order-confirmation
-        clearCart();
-        redirectToPayfast(order);
-        // Note: page will redirect, code below won't run
-      } else {
-        // Manual EFT — go straight to confirmation
-        clearCart();
-        navigate('/order-confirmation', { state: { order } });
-      }
-    } catch (err) {
-      console.error('Order failed:', err);
-      alert('Failed to place order. Please try again.');
-      setSubmitting(false);
+    if (payment === 'payfast') {
+      clearCart();
+      // This redirects the browser — synchronous, no await needed
+      redirectToPayfast(order);
+    } else {
+      clearCart();
+      navigate('/order-confirmation', { state: { order } });
     }
   };
 
@@ -179,19 +198,23 @@ function Checkout() {
                   <div className="form-grid">
                     <div className="form-group">
                       <label htmlFor="firstName">First Name *</label>
-                      <input id="firstName" name="firstName" required value={form.firstName} onChange={handleChange} placeholder="First name" />
+                      <input id="firstName" name="firstName" required value={form.firstName} onChange={handleChange} placeholder="First name" className={errors.firstName ? 'input-error' : ''} />
+                      {errors.firstName && <span className="field-error">{errors.firstName}</span>}
                     </div>
                     <div className="form-group">
                       <label htmlFor="lastName">Last Name *</label>
-                      <input id="lastName" name="lastName" required value={form.lastName} onChange={handleChange} placeholder="Last name" />
+                      <input id="lastName" name="lastName" required value={form.lastName} onChange={handleChange} placeholder="Last name" className={errors.lastName ? 'input-error' : ''} />
+                      {errors.lastName && <span className="field-error">{errors.lastName}</span>}
                     </div>
                     <div className="form-group">
                       <label htmlFor="email">Email Address *</label>
-                      <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} placeholder="you@example.com" readOnly={!!user} className={user ? 'input-readonly' : ''} />
+                      <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} placeholder="you@example.com" readOnly={!!user} className={`${user ? 'input-readonly' : ''} ${errors.email ? 'input-error' : ''}`} />
+                      {errors.email && <span className="field-error">{errors.email}</span>}
                     </div>
                     <div className="form-group">
                       <label htmlFor="phone">Phone Number *</label>
-                      <input id="phone" name="phone" type="tel" required value={form.phone} onChange={handleChange} placeholder="e.g. 082 555 0000" />
+                      <input id="phone" name="phone" type="tel" required value={form.phone} onChange={handleChange} placeholder="e.g. 082 555 0000" className={errors.phone ? 'input-error' : ''} />
+                      {errors.phone && <span className="field-error">{errors.phone}</span>}
                     </div>
                     <div className="form-group form-full">
                       <label htmlFor="company">Company Name (optional)</label>
@@ -201,9 +224,7 @@ function Checkout() {
                   <button
                     type="button"
                     className="btn btn-primary"
-                    onClick={() => {
-                      if (form.firstName && form.lastName && form.email && form.phone) setStep(2);
-                    }}
+                    onClick={() => { if (validateStep1()) setStep(2); }}
                   >
                     Continue to Shipping →
                   </button>
@@ -217,7 +238,8 @@ function Checkout() {
                   <div className="form-grid">
                     <div className="form-group form-full">
                       <label htmlFor="address">Street Address *</label>
-                      <input id="address" name="address" required value={form.address} onChange={handleChange} placeholder="123 Main Street" />
+                      <input id="address" name="address" required value={form.address} onChange={handleChange} placeholder="123 Main Street" className={errors.address ? 'input-error' : ''} />
+                      {errors.address && <span className="field-error">{errors.address}</span>}
                     </div>
                     <div className="form-group form-full">
                       <label htmlFor="address2">Apartment / Unit (optional)</label>
@@ -225,11 +247,12 @@ function Checkout() {
                     </div>
                     <div className="form-group">
                       <label htmlFor="city">City *</label>
-                      <input id="city" name="city" required value={form.city} onChange={handleChange} placeholder="City" />
+                      <input id="city" name="city" required value={form.city} onChange={handleChange} placeholder="City" className={errors.city ? 'input-error' : ''} />
+                      {errors.city && <span className="field-error">{errors.city}</span>}
                     </div>
                     <div className="form-group">
                       <label htmlFor="province">Province *</label>
-                      <select id="province" name="province" required value={form.province} onChange={handleChange}>
+                      <select id="province" name="province" required value={form.province} onChange={handleChange} className={errors.province ? 'input-error' : ''}>
                         <option value="">Select province</option>
                         <option>Gauteng</option>
                         <option>Western Cape</option>
@@ -241,10 +264,12 @@ function Checkout() {
                         <option>North West</option>
                         <option>Northern Cape</option>
                       </select>
+                      {errors.province && <span className="field-error">{errors.province}</span>}
                     </div>
                     <div className="form-group">
                       <label htmlFor="postalCode">Postal Code *</label>
-                      <input id="postalCode" name="postalCode" required value={form.postalCode} onChange={handleChange} placeholder="4001" />
+                      <input id="postalCode" name="postalCode" required value={form.postalCode} onChange={handleChange} placeholder="4001" className={errors.postalCode ? 'input-error' : ''} />
+                      {errors.postalCode && <span className="field-error">{errors.postalCode}</span>}
                     </div>
                   </div>
 
@@ -264,9 +289,7 @@ function Checkout() {
                     <button
                       type="button"
                       className="btn btn-primary"
-                      onClick={() => {
-                        if (shipping === 'collect' || (form.address && form.city && form.province && form.postalCode)) setStep(3);
-                      }}
+                      onClick={() => { if (validateStep2()) setStep(3); }}
                     >
                       Continue to Payment →
                     </button>

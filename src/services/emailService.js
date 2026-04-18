@@ -1,10 +1,7 @@
 /**
  * EmailJS email service
- * Sender: smisomsimango@gmail.com
- * Recipient: admin@3sixtybranding.co.za
- *
- * Uses the browser SDK loaded via CDN (no npm install needed).
- * EmailJS is initialised once when this module is first imported.
+ * All emails are sent to admin@3sixtybranding.co.za
+ * Credentials are loaded from environment variables only.
  */
 
 const PUBLIC_KEY    = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;

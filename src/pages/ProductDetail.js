@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProduct, useProducts } from '../hooks/useProducts';
 import { categories } from '../data/products';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import ProductCard from '../components/ProductCard';
 import './ProductDetail.css';
 
@@ -12,6 +13,7 @@ function ProductDetail() {
   const { product, loading, error } = useProduct(id);
   const { products: allProducts } = useProducts();
   const { addItem } = useCart();
+  const { showToast } = useToast();
 
   // ── Webprinter-style state ──
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -60,6 +62,7 @@ function ProductDetail() {
       return;
     }
     addItem(product, qty, { variant: selectedVariant, artworkOption, artworkNote });
+    showToast(`✓ ${product.name} added to cart!`, 'success');
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   };

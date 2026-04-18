@@ -17,7 +17,11 @@ function Auth() {
     firstName: '', lastName: '', email: '', phone: '', password: '', confirmPassword: '',
   });
 
-  const set = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+  const set = (field) => (e) => {
+    // Strip HTML tags to prevent XSS
+    const value = e.target.value.replace(/<[^>]*>/g, '');
+    setForm({ ...form, [field]: value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

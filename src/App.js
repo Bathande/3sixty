@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import Header from './components/Header';
 import { QuotePanel } from './components/Header';
 import Footer from './components/Footer';
@@ -31,7 +32,8 @@ function App() {
 
   return (
     <AuthProvider>
-      <CartProvider>
+      <ToastProvider>
+        <CartProvider>
         <Router>
           <div className="App">
             <Header onQuoteOpen={() => setQuoteOpen(true)} />
@@ -55,6 +57,7 @@ function App() {
           </div>
         </Router>
       </CartProvider>
+      </ToastProvider>
     </AuthProvider>
   );
 }

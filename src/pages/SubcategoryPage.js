@@ -3,6 +3,7 @@ import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { subcategories } from '../data/subcategories';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import './SubcategoryPage.css';
 
 function SubcategoryPage() {
@@ -10,6 +11,7 @@ function SubcategoryPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const { showToast } = useToast();
   const { products: allProducts, loading } = useProducts();
 
   const sub = subcategories[subcategoryId];
@@ -66,6 +68,7 @@ function SubcategoryPage() {
     if (!selectedProduct) return;
     addItem(selectedProduct, qty, { variant: selectedVariant, artworkOption, artworkNote });
     setAdded(true);
+    showToast(`✓ ${selectedProduct.name} added to cart!`, 'success');
     setTimeout(() => setAdded(false), 2500);
   };
 
