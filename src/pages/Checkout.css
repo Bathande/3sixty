@@ -71,3 +71,93 @@
   .form-grid { grid-template-columns: 1fr; }
   .checkout-summary { position: static; }
 }
+
+/* Auth banners */
+.checkout-auth-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #f0f2f5;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.auth-banner-text { font-size: 0.9rem; color: #444; }
+.btn-auth-banner {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-auth-banner:hover { background: #C8102E; }
+
+.checkout-user-banner {
+  background: #f0fff4;
+  border: 1px solid #b2dfdb;
+  border-left: 3px solid #2BA8A8;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.step-sep { color: #ccc; font-size: 1rem; }
+
+.input-readonly {
+  background: #f8f9fa !important;
+  color: #888 !important;
+  cursor: not-allowed;
+}
+
+.checkout-item-variant {
+  display: block;
+  font-size: 0.72rem;
+  color: #C8102E;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .checkout-auth-banner { flex-direction: column; align-items: flex-start; }
+  .checkout-steps { font-size: 0.8rem; gap: 4px; }
+  .step { padding: 6px 12px; }
+}
+
+/* PayFast payment option */
+.payment-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.payment-name { font-size: 0.9rem; font-weight: 600; color: #1a1a2e; }
+.payment-desc { font-size: 0.78rem; color: #888; line-height: 1.4; }
+
+.payment-info-payfast {
+  background: #f0fff4;
+  border: 1px solid #b2dfdb;
+  border-left: 3px solid #2BA8A8;
+}
+.payfast-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.payfast-badges span {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+}

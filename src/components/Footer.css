@@ -53,3 +53,12 @@
 @media (max-width: 480px) {
   .footer-grid { grid-template-columns: 1fr; }
 }
+
+.footer-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 12px;
+  /* Invert to white since footer is dark */
+  filter: brightness(0) invert(1);
+}

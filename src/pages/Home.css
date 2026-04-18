@@ -10,9 +10,12 @@
   inset: 0;
   opacity: 0;
   transition: opacity 0.8s ease;
+  pointer-events: none;
 }
 .hero-slide.active {
   opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
 }
 .hero-slide-img {
   width: 100%;
@@ -28,6 +31,8 @@
 }
 .hero-content {
   color: #fff;
+  position: relative;
+  z-index: 2;
 }
 .hero-content h1 {
   font-size: 3rem;
@@ -52,6 +57,7 @@
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
+  z-index: 2;
 }
 .dot {
   width: 12px;

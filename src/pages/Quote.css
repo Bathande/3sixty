@@ -70,3 +70,17 @@
   .form-grid { grid-template-columns: 1fr; }
   .quote-form { padding: 24px; }
 }
+
+.form-full-grid {
+  grid-column: 1 / -1;
+}
+.quote-error {
+  background: #fff0f0;
+  border: 1px solid #ffcccc;
+  border-left: 3px solid #C8102E;
+  color: #C8102E;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}

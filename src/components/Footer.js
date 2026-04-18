@@ -7,16 +7,15 @@ function Footer() {
     <footer className="footer">
       <div className="container footer-grid">
         <div className="footer-col">
-          <h3>3<span className="logo-accent">SIXTY</span></h3>
-          <p>Your trusted partner for quality branded promotional products, corporate gifts and clothing in South Africa.</p>
+          <Link to="/">
+            <img src="/images/logo-3sixty.png" alt="3Sixty Branding" className="footer-logo" />
+          </Link>
+          <p>Your trusted partner for quality branded display solutions, corporate gifts and printing in South Africa.</p>
         </div>
         <div className="footer-col">
           <h4>Quick Links</h4>
           <ul>
             <li><Link to="/products">All Products</Link></li>
-            <li><Link to="/products?category=clothing">Clothing</Link></li>
-            <li><Link to="/products?category=drinkware">Drinkware</Link></li>
-            <li><Link to="/products?category=tech">Tech & Gadgets</Link></li>
             <li><Link to="/quote">Request a Quote</Link></li>
           </ul>
         </div>

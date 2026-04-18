@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useSearch } from '../hooks/useSearch';
 import './Header.css';
 
 const NAV_ITEMS = [
@@ -79,27 +81,6 @@ const NAV_ITEMS = [
   },
 ];
 
-const SEARCH_PRODUCTS = [
-  { n: 'Flyers A5 / A6 / A4', c: 'Paper Printing', to: '/products?category=paper-printing' },
-  { n: 'Business Cards', c: 'Paper Printing', to: '/products?category=paper-printing' },
-  { n: 'Economy PVC Pull-Up Banner', c: 'Indoor Branding', to: '/products?category=indoor-branding' },
-  { n: 'Executive PVC Pull-Up', c: 'Indoor Branding', to: '/products?category=indoor-branding' },
-  { n: 'Curved Banner Wall', c: 'Indoor Branding', to: '/products?category=indoor-branding' },
-  { n: 'Branded Tablecloth', c: 'Indoor Branding', to: '/products?category=indoor-branding' },
-  { n: 'Telescopic Banner', c: 'Outdoor Branding', to: '/products?category=outdoor-branding' },
-  { n: 'Teardrop Banner', c: 'Outdoor Branding', to: '/products?category=outdoor-branding' },
-  { n: 'Sandwich Board A1', c: 'Outdoor Branding', to: '/products?category=outdoor-branding' },
-  { n: 'Gazebo 3m × 3m', c: 'Outdoor Branding', to: '/products?category=outdoor-branding' },
-  { n: 'DTF T-Shirt Print', c: 'T-Shirt Printing', to: '/services' },
-  { n: 'Embroidery (min. 6)', c: 'T-Shirt Printing', to: '/services' },
-  { n: 'Logo Design', c: 'Graphic Design', to: '/services' },
-  { n: 'Flyer / Banner Design', c: 'Graphic Design', to: '/services' },
-  { n: 'Vehicle Branding / Car Wrap', c: 'Request a Quote', to: '/quote', q: true },
-  { n: 'Shop Front Signage', c: 'Request a Quote', to: '/quote', q: true },
-  { n: 'Illuminated Signage', c: 'Request a Quote', to: '/quote', q: true },
-  { n: 'Window Graphics', c: 'Request a Quote', to: '/quote', q: true },
-];
-
 const CaretIcon = () => (
   <svg className="caret" viewBox="0 0 12 8" aria-hidden="true">
     <polyline points="1,1 6,7 11,1" />
@@ -154,19 +135,24 @@ function Header({ onQuoteOpen }) {
   const [openNav, setOpenNav] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchCat, setSearchCat] = useState('All Categories');
-  const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const navigate = useNavigate();
   const { totalItems } = useCart();
+  const { user, profile, logout } = useAuth();
   const searchRef = useRef(null);
   const navRef = useRef(null);
+  const accountRef = useRef(null);
+
+  // Live search from Firestore
+  const { results: searchResults, loading: searchLoading } = useSearch(searchQuery);
 
   // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e) => {
       if (navRef.current && !navRef.current.contains(e.target)) setOpenNav(null);
       if (searchRef.current && !searchRef.current.contains(e.target)) setShowResults(false);
+      if (accountRef.current && !accountRef.current.contains(e.target)) setAccountOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -174,7 +160,7 @@ function Header({ onQuoteOpen }) {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim().length >= 3) {
+    if (searchQuery.trim().length >= 2) {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
       setShowResults(false);
@@ -184,17 +170,7 @@ function Header({ onQuoteOpen }) {
 
   const handleSearchInput = (val) => {
     setSearchQuery(val);
-    if (val.trim().length >= 3) {
-      const q = val.toLowerCase();
-      let filtered = SEARCH_PRODUCTS.filter(
-        (p) => p.n.toLowerCase().includes(q) || p.c.toLowerCase().includes(q)
-      );
-      if (searchCat !== 'All Categories') filtered = filtered.filter((p) => p.c === searchCat);
-      setSearchResults(filtered.slice(0, 8));
-      setShowResults(true);
-    } else {
-      setShowResults(false);
-    }
+    setShowResults(val.trim().length >= 2);
   };
 
   const toggleNav = (id) => setOpenNav((prev) => (prev === id ? null : id));
@@ -202,24 +178,28 @@ function Header({ onQuoteOpen }) {
 
   return (
     <>
-      {/* Top bar */}
+      {/* Top bar — phone + contact */}
       <div className="top-bar">
-        <a href="tel:0310016467">031 001 6467</a>
-        <span className="top-sep">|</span>
-        <a href="mailto:info@3sixtybranding.co.za">info@3sixtybranding.co.za</a>
-        <span className="top-sep">|</span>
-        <a href="/contact">127 Victoria Embankment, Durban</a>
-        <span className="top-sep">|</span>
-        <Link to="/orders">Track My Order</Link>
+        <div className="top-bar-left">
+          <a href="tel:0310016467">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>
+            031 001 6467
+          </a>
+          <span className="top-sep">|</span>
+          <a href="mailto:info@3sixtybranding.co.za">info@3sixtybranding.co.za</a>
+        </div>
+        <div className="top-bar-right">
+          <a href="/contact">127 Victoria Embankment, Durban</a>
+          <span className="top-sep">|</span>
+          <Link to="/contact" className="top-contact-btn">Contact Us</Link>
+        </div>
       </div>
 
       {/* Main header */}
       <div className="header-main">
         <div className="logo-wrap">
           <Link to="/" className="logo-link">
-            <span className="logo-name">3SIXTY</span>
-            <span className="logo-name logo-teal">BRANDING</span>
-            <span className="logo-tag">Print • Brand • Create</span>
+            <img src="/images/logo-3sixty.png" alt="3Sixty Branding" className="logo-img" />
           </Link>
         </div>
 
@@ -229,24 +209,10 @@ function Header({ onQuoteOpen }) {
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchInput(e.target.value)}
-              placeholder="Search by product name, category or keyword (min. 3 characters)"
+              placeholder="Search products..."
               autoComplete="off"
               aria-label="Search products"
             />
-            <select
-              className="cat-select"
-              value={searchCat}
-              onChange={(e) => setSearchCat(e.target.value)}
-              aria-label="Filter by category"
-            >
-              <option>All Categories</option>
-              <option>Paper Printing</option>
-              <option>Indoor Branding</option>
-              <option>Outdoor Branding</option>
-              <option>T-Shirt Printing</option>
-              <option>Graphic Design</option>
-              <option>Request a Quote</option>
-            </select>
             <button type="submit" className="search-btn" aria-label="Search">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <circle cx="11" cy="11" r="7" />
@@ -256,33 +222,97 @@ function Header({ onQuoteOpen }) {
           </form>
           {showResults && (
             <div className="search-results">
-              {searchResults.length === 0 ? (
+              {searchLoading ? (
+                <div className="sr-no-results">Searching...</div>
+              ) : searchResults.length === 0 ? (
                 <div className="sr-no-results">
-                  No results — <button onClick={() => { onQuoteOpen(); setShowResults(false); }}>request a custom quote</button>
+                  No results for "<strong>{searchQuery}</strong>" —{' '}
+                  <button onClick={() => { onQuoteOpen(); setShowResults(false); }}>request a custom quote</button>
                 </div>
               ) : (
-                searchResults.map((p) => (
+                <>
+                  {searchResults.map((p) => (
+                    <div
+                      key={p.id}
+                      className="sr-item"
+                      onClick={() => {
+                        navigate(`/product/${p.id}`);
+                        setShowResults(false);
+                        setSearchQuery('');
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === 'Enter' && navigate(`/product/${p.id}`)}
+                    >
+                      {p.image && (
+                        <div className="sr-img">
+                          <img src={p.image} alt={p.name} />
+                        </div>
+                      )}
+                      <div className="sr-info">
+                        <div className="sr-text">{p.name}</div>
+                        <div className="sr-cat">{p.category?.replace(/-/g, ' ')}</div>
+                      </div>
+                      {p.price && (
+                        <div className="sr-price">R {p.price.toLocaleString('en-ZA')}</div>
+                      )}
+                    </div>
+                  ))}
                   <div
-                    key={p.n}
-                    className="sr-item"
-                    onClick={() => { navigate(p.to); setShowResults(false); setSearchQuery(''); }}
+                    className="sr-view-all"
+                    onClick={() => {
+                      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+                      setShowResults(false);
+                      setSearchQuery('');
+                    }}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && navigate(p.to)}
+                    onKeyDown={(e) => e.key === 'Enter' && navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`)}
                   >
-                    <div className="sr-text">
-                      {p.n}
-                      {p.q && <span className="sr-quote-tag">QUOTE</span>}
-                    </div>
-                    <div className="sr-cat">{p.c}</div>
+                    View all {searchResults.length} results for "<strong>{searchQuery}</strong>"
                   </div>
-                ))
+                </>
               )}
             </div>
           )}
         </div>
 
         <div className="header-actions">
+          {/* Account button */}
+          <div className="account-wrap" ref={accountRef}>
+            {user ? (
+              <>
+                <button className="h-btn" onClick={() => setAccountOpen(!accountOpen)} aria-label="Account">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  <span>{profile?.firstName || 'Account'}</span>
+                </button>
+                {accountOpen && (
+                  <div className="account-dropdown">
+                    <div className="account-info">
+                      <strong>{profile?.firstName} {profile?.lastName}</strong>
+                      <span>{user.email}</span>
+                    </div>
+                    <div className="account-sep" />
+                    <button onClick={() => { logout(); setAccountOpen(false); }} className="account-item account-logout">
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <Link to="/auth" className="h-btn">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <span>Sign In</span>
+              </Link>
+            )}
+          </div>
+
           <Link to="/cart" className="h-btn" aria-label={`Cart with ${totalItems} items`}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M9 20a1 1 0 1 0 2 0 1 1 0 0 0-2 0M20 20a1 1 0 1 0 2 0 1 1 0 0 0-2 0M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />

@@ -39,9 +39,16 @@
 .product-desc { font-size: 0.8rem; color: #888; margin: 0 0 12px; line-height: 1.4; flex: 1; }
 .product-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .product-price { font-size: 1.05rem; font-weight: 700; color: #C8102E; }
-.btn-add-cart {
-  background: #1a1a2e; color: #fff; border: none;
-  padding: 8px 14px; border-radius: 6px; font-size: 0.78rem;
-  font-weight: 600; cursor: pointer; transition: background 0.2s; white-space: nowrap;
+.product-price-tbc { font-size: 0.82rem; color: #888; font-style: italic; }
+.btn-more-details {
+  background: #C8102E;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s;
+  flex-shrink: 0;
 }
-.btn-add-cart:hover { background: #C8102E; }
+.product-card:hover .btn-more-details { background: #A00D24; }
