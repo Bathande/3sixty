@@ -52,8 +52,8 @@ function ProductDetail() {
     setSelectedVariant(product.variants[0]);
   }
 
-  // Calculate price based on variant or base price
-  const displayPrice = selectedVariant?.price || product.price || 0;
+  // Price is normalised to top-level by useProducts hook
+  const displayPrice = selectedVariant?.price ?? product.price ?? 0;
   const lineTotal = displayPrice * qty;
 
   const handleAddToCart = () => {

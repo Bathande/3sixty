@@ -61,8 +61,9 @@ function SubcategoryPage() {
     );
   }
 
-  const displayPrice = selectedVariant?.price || selectedProduct?.price || null;
-  const lineTotal = displayPrice ? displayPrice * qty : null;
+  // Price is normalised to top-level by useProducts hook
+  const displayPrice = selectedVariant?.price ?? selectedProduct?.price ?? null;
+  const lineTotal = displayPrice != null ? displayPrice * qty : null;
 
   const handleAddToCart = () => {
     if (!selectedProduct) return;

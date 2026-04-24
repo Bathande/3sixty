@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { addOrder } from '../services/ordersService';
-import { sendOrderEmail } from '../services/emailService';
+import { sendOrderEmail, sendEftEmail } from '../services/emailService';
 import { redirectToPayfast } from '../services/payfastService';
 import './Checkout.css';
 
@@ -56,7 +56,7 @@ function Checkout() {
   const shippingCost = SHIPPING_OPTIONS.find((s) => s.id === shipping)?.price || 0;
   const total = subtotal + shippingCost;
 
-  if (items.length === 0) {
+  if (items.length === 0 && !submitting) {
     return (
       <main className="checkout-page">
         <div className="container">
@@ -101,13 +101,16 @@ function Checkout() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
     setSubmitting(true);
 
+    const orderNumber = String(Math.floor(100000 + Math.random() * 900000)); // 6-digit e.g. "483921"
+
     const order = {
-      orderId: 'ORD-' + Date.now().toString(36).toUpperCase(),
+      orderId:     `ORD-${orderNumber}`,
+      orderNumber: orderNumber,
       date: new Date().toISOString(),
       userId: user?.uid || null,
       isGuest: !user,
@@ -128,13 +131,23 @@ function Checkout() {
       paymentStatus: payment === 'payfast' ? 'pending_payfast' : 'pending_eft',
     };
 
-    // Fire-and-forget background tasks — never block payment
+    // Save to Firestore — non-blocking
     addOrder(order).catch((err) => console.error('[Order] Firestore save failed:', err));
-    sendOrderEmail(order).catch((err) => console.error('[Order] Email failed:', err));
+
+    // Send admin notification email
+    try {
+      await sendOrderEmail(order);
+    } catch (emailErr) {
+      console.error('[Order] Email failed:', emailErr);
+    }
+
+    // Send EFT banking details to customer if they chose EFT
+    if (payment === 'eft') {
+      sendEftEmail(order).catch((err) => console.error('[EFT] Customer email failed:', err));
+    }
 
     if (payment === 'payfast') {
       clearCart();
-      // This redirects the browser — synchronous, no await needed
       redirectToPayfast(order);
     } else {
       clearCart();

@@ -1,17 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+import { sendCourierNotification } from '../services/emailService';
 import './OrderConfirmation.css';
 
 function OrderConfirmation() {
   const { state } = useLocation();
   const [searchParams] = useSearchParams();
 
-  // PayFast returns with ?status=success&order=ORD-xxx
-  const payfastStatus = searchParams.get('status');
-  const payfastOrderId = searchParams.get('order');
-  const fromPayfast = !!payfastStatus;
+  const payfastStatus  = searchParams.get('status');
+  const payfastOrderId = searchParams.get('order'); // e.g. "ORD-483921"
+  const fromPayfast    = !!payfastStatus;
 
   const order = state?.order;
+  const [notified, setNotified] = useState(false);
+
+  // When PayFast returns successfully, fetch order from Firestore and notify courier
+  useEffect(() => {
+    if (fromPayfast && payfastStatus === 'success' && payfastOrderId && !notified) {
+      setNotified(true);
+      // Fetch the order from Firestore by orderId
+      const fetchAndNotify = async () => {
+        try {
+          const q = query(
+            collection(db, 'orders'),
+            where('orderId', '==', payfastOrderId)
+          );
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            const orderData = snap.docs[0].data();
+            await sendCourierNotification(payfastOrderId, orderData);
+          }
+        } catch (err) {
+          // Silent — don't block the confirmation page
+        }
+      };
+      fetchAndNotify();
+    }
+  }, [fromPayfast, payfastStatus, payfastOrderId, notified]);
 
   // PayFast return — no state available (page was redirected externally)
   if (fromPayfast && !order) {

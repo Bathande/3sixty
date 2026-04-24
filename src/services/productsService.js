@@ -36,9 +36,7 @@ export const getProducts = async () => {
   try {
     const q = query(collection(db, COLLECTION), orderBy('name', 'asc'));
     const snapshot = await getDocs(q);
-    const results = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    console.log(`[Firestore] getProducts → ${results.length} products loaded`);
-    return results;
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   } catch (err) {
     console.error('[Firestore] getProducts failed:', err.code, err.message);
     throw err;

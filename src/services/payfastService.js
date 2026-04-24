@@ -40,18 +40,11 @@ export function redirectToPayfast(order) {
     cell_number:      (order.customer.phone || '').replace(/[^\d]/g, '').substring(0, 20),
     m_payment_id:     clean(order.orderId),
     amount:           Number(order.total).toFixed(2),
-    item_name:        clean(`3Sixty Order ${order.orderId}`),
+    item_name:        clean(`3Sixty Order #${order.orderNumber || order.orderId}`),
     item_description: itemDesc,
     custom_str1:      clean(order.orderId),
   };
 
-  // ── Debug: log all fields being sent to PayFast ──
-  console.log('[PayFast] Submitting to:', PAYFAST_URL);
-  console.log('[PayFast] Mode:', IS_LIVE ? 'LIVE' : 'SANDBOX');
-  console.log('[PayFast] Fields:', JSON.stringify(fields, null, 2));
-  console.log('[PayFast] merchant_key length:', String(fields.merchant_key || '').length);
-
-  // Build and submit a hidden POST form
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = PAYFAST_URL;

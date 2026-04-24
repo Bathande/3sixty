@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import './ProductCard.css';
 
 function ProductCard({ product }) {
+  // Price is normalised to top-level by useProducts hook
+  const price = product.price;
+
   return (
     <Link to={`/product/${product.id}`} className="product-card">
       <div className="product-image">
@@ -20,14 +23,12 @@ function ProductCard({ product }) {
           {product.description ? product.description.substring(0, 90) + '...' : ''}
         </p>
         <div className="product-bottom">
-          {product.price ? (
-            <span className="product-price">R {product.price.toLocaleString('en-ZA')}</span>
+          {price != null ? (
+            <span className="product-price">R {Number(price).toLocaleString('en-ZA')}</span>
           ) : (
             <span className="product-price-tbc">Price on request</span>
           )}
-          <span className="btn-more-details">
-            More Details →
-          </span>
+          <span className="btn-more-details">More Details →</span>
         </div>
       </div>
     </Link>
